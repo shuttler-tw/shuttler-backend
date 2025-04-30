@@ -4,7 +4,7 @@ const memberRouter = require('./members');
 
 const router = express.Router();
 
-router.use('/members', memberRouter);
+router.use('/auth', memberRouter);
 // router.use('/orders', orderRouter);
 
 module.exports = router;
