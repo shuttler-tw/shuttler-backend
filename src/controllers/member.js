@@ -17,9 +17,9 @@ const memberController = {
       if (!isValidPassword(password)) {
         logger.warn(
           '註冊使用者錯誤:',
-          '密碼不符合規則,需要包含英文數字大小寫,最短8個字,最長16個字',
+          '密碼不符合規則，需要包含英文數字大小寫，最短8個字，最長16個字',
         );
-        return next(appError(400, '密碼格式錯誤'));
+        return next(appError(400, '密碼不符合規則，需要包含英文數字大小寫，最短8個字，最長16個字'));
       }
 
       const existingMember = await dataSource.getRepository('Member').findOne({
@@ -28,8 +28,8 @@ const memberController = {
         },
       });
       if (existingMember) {
-        logger.warn('註冊使用者錯誤:', '該信箱已被註冊');
-        return next(appError(409, '該信箱已被註冊'));
+        logger.warn('註冊使用者錯誤:', '此 Email 已經註冊');
+        return next(appError(409, '此 Email 已經註冊'));
       }
 
       const salt = await bcrypt.genSalt(10);
@@ -43,12 +43,16 @@ const memberController = {
       const savedMember = await dataSource.getRepository('Member').save(newMember);
       logger.info('註冊使用者成功:', savedMember.id);
 
+      const token = await generateJWT({ id: savedMember.id });
+
       res.status(201).json({
+        message: '註冊成功',
         data: {
-          member: {
+          user: {
             id: savedMember.id,
             name: savedMember.name,
           },
+          token,
         },
       });
     } catch (error) {
@@ -58,40 +62,18 @@ const memberController = {
   },
   login: async (req, res, next) => {
     try {
-      const { email, password } = req.body;
-      if (!isValidString(email) || !isValidString(password)) {
-        logger.warn('登入使用者錯誤:', '欄位未填寫正確');
-        return next(appError(400, '欄位未填寫正確'));
-      }
-
-      const existingMember = await dataSource.getRepository('Member').findOne({
-        where: {
-          email,
-        },
-        select: ['id', 'name', 'email', 'password'],
-      });
-      if (!existingMember) {
-        logger.warn('登入使用者錯誤:', '使用者不存在');
-        return next(appError(400, '使用者不存在'));
-      }
-
-      const isMatch = await bcrypt.compare(password, existingMember.password);
-      if (!isMatch) {
-        logger.warn('登入使用者錯誤:', '密碼錯誤');
-        return next(appError(400, '密碼錯誤'));
-      }
-
-      const token = await generateJWT({ id: existingMember.id });
+      const user = req.user;
+      const token = await generateJWT({ id: user.id });
 
       res.status(200).json({
+        message: '登入成功',
         data: {
-          member: {
-            token,
-            user: {
-              name: existingMember.name,
-              email: existingMember.email,
-            },
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
           },
+          token,
         },
       });
     } catch (error) {
