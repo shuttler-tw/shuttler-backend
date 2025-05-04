@@ -32,16 +32,20 @@ module.exports = new EntitySchema({
       length: 255,
       nullable: true,
     },
-    skill_level_id: {
+    skill_level: {
       type: 'int',
       array: true,
       nullable: true,
     },
     region: {
-      type: 'varchar',
-      length: 50,
+      type: 'int',
       array: true,
       nullable: true,
+    },
+    total_point: {
+      type: 'int',
+      default: 0,
+      nullable: false,
     },
     created_at: {
       type: 'timestamp',

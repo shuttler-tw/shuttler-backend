@@ -17,10 +17,14 @@ passport.use(
       const member = await dataSource.getRepository('Member').findOne({
         where: { id: jwtPayload.id },
       });
+
       if (member) {
         return done(null, member);
       }
-      return done(null, false);
+      return done(null, false, {
+        message: '請先登入',
+        statusCode: 401,
+      });
     } catch (error) {
       return done(error, false);
     }
@@ -36,11 +40,6 @@ passport.use(
     },
     async (req, email, password, done) => {
       try {
-        console.log('==========================================');
-        console.log('email', email);
-        console.log('password', password);
-        console.log('==========================================');
-
         const member = await dataSource.getRepository('Member').findOne({
           where: { email },
           select: ['id', 'name', 'email', 'password'],
