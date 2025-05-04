@@ -1,0 +1,26 @@
+name: deploy backend
+
+on:
+  pull_request:
+    branches: [develop]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: SSH into EC2 and clone repo
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          port: ${{ secrets.EC_PORT }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/ubuntu/work
+            git clone git@github.com:shuttler-tw/shuttler-backend.git
+            ls
