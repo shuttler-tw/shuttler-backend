@@ -3,6 +3,7 @@ name: 部署後端程式
 on:
   pull_request:
     branches: [develop]
+  workflow_dispatch:
 
 jobs:
   deploy:
