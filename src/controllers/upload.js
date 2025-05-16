@@ -5,12 +5,18 @@ const appError = require('../utils/appError');
 const { dataSource } = require('../db/data-source');
 const { v4: uuidv4 } = require('uuid');
 
+// 設定 aws 金鑰, 如果沒有設定則使用 IAM Role
+const credentials =
+  config.get('aws.accessKeyId') && config.get('aws.secretAccessKey')
+    ? {
+        accessKeyId: config.get('aws.accessKeyId'),
+        secretAccessKey: config.get('aws.secretAccessKey'),
+      }
+    : undefined;
+
 const s3 = new S3Client({
   region: config.get('aws.region'),
-  credentials: {
-    accessKeyId: config.get('aws.accessKeyId'),
-    secretAccessKey: config.get('aws.secretAccessKey'),
-  },
+  credentials,
 });
 
 const uploadToS3 = async ({ key, body, contentType }) => {
@@ -31,9 +37,7 @@ const uploadController = {
       const { files } = req;
       const { id } = req.user;
       const { uploadType } = req.body;
-      console.log('=======================================');
-      console.log('req.body', req.body);
-      console.log('=======================================');
+
       // 驗證有傳入上傳種類參數
       if (!uploadType) {
         logger.warn('上傳圖片錯誤:', '缺少上傳類型');
