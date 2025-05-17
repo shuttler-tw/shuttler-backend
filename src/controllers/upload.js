@@ -2,8 +2,6 @@ const config = require('../config');
 const { S3Client, PutObjectCommand, S3ServiceException } = require('@aws-sdk/client-s3');
 const logger = require('../utils/logger')('Upload');
 const appError = require('../utils/appError');
-const { dataSource } = require('../db/data-source');
-const { v4: uuidv4 } = require('uuid');
 
 // 設定 aws 金鑰, 如果沒有設定則使用 IAM Role
 const credentials =
@@ -28,6 +26,7 @@ const uploadToS3 = async ({ key, body, contentType }) => {
       ContentType: contentType,
     }),
   );
+
   return `https://${config.get('aws.bucketName')}.s3.${config.get('aws.region')}.amazonaws.com/${key}`;
 };
 
@@ -53,38 +52,32 @@ const uploadController = {
       const uploadStrategies = {
         avatar: async () => {
           const file = files[0];
+          const fileName = file.originalname;
           const url = await uploadToS3({
-            key: `avatar/${id}`,
+            key: `${id}/avatar/${fileName}-${Date.now()}`,
             body: file.buffer,
             contentType: file.mimetype,
           });
 
-          const userRepo = dataSource.getRepository('Members');
-          const user = await userRepo.findOne({ where: { id } });
-
-          if (!user) {
-            logger.warn('上傳圖片錯誤:', '使用者不存在');
-            return next(appError(404, '使用者不存在'));
-          }
-
-          user.photo = url;
-          await userRepo.save(user);
+          // TODO: 刪除舊的圖片
 
           return { data: url };
         },
         activity: async () => {
-          const activityId = uuidv4();
           const urls = await Promise.all(
             files.map(async (file, index) => {
+              const fileName = file.originalname;
               return uploadToS3({
-                key: `activity/${index}-${activityId}`,
+                key: `${id}/activity/${fileName}-${Date.now()}`,
                 body: file.buffer,
                 contentType: file.mimetype,
               });
             }),
           );
 
-          return { activityId, data: urls };
+          // TODO: 刪除舊的圖片
+
+          return { data: urls };
         },
       };
 
@@ -98,7 +91,6 @@ const uploadController = {
       res.status(200).json({
         message: '上傳圖片成功',
         data: {
-          activityId: result.activityId || null,
           photo: result.data,
         },
       });
