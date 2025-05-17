@@ -45,6 +45,3 @@ jobs:
             docker exec -it demo-backend-amd64 /pnpm/pm2 status
             unset PGPASSWORD
             echo "Deploy complete"
-
-
-
