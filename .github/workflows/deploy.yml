@@ -28,12 +28,6 @@ jobs:
             cd ~/work/github/shuttler-backend-dev
             git pull
             export PGPASSWORD=${DB_PASSWORD}
-            echo PGPASSWORD=${DB_PASSWORD} >> 2025-05-18-log
-            echo DB_HOST=${DB_HOST} >> 2025-05-18-log
-            echo DB_PORT=${DB_PORT} >> 2025-05-18-log
-            echo DB_DATABASE_DEV=${DB_DATABASE_DEV} >> 2025-05-18-log
-            echo DB_USERNAME=${DB_USERNAME} >> 2025-05-18-log
-            echo DB_PASSWORD=${DB_PASSWORD} >> 2025-05-18-log
-            echo DB_DATABASE_DEV=${DB_DATABASE_DEV} >> 2025-05-18-log
-            cat 2025-05-18-log
+            echo "Show Current Database"
+            psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USERNAME} -d ${DB_DATABASE_DEV} -c '\list'
             echo "Deploy complete"
