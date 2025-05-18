@@ -40,4 +40,8 @@ jobs:
           
             echo "🔍 開始檢查資料庫狀態..."
             check_db_exists "${DB_DATABASE_DEV}"
+            echo "🔥 開始刪除資料庫 ${DB_DATABASE_DEV}...
+            psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USERNAME} -d postgres -c "drop database if exists '${dbname}';"
+            check_db_exists "${DB_DATABASE_DEV}"
+
             echo "Deploy complete"
