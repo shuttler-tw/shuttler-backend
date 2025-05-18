@@ -2,7 +2,7 @@ name: Remote SSH Commanda
 on:
   push:
     branches:
-      - develop
+      - feat/deploy
   workflow_dispatch: {}
 
 jobs:
