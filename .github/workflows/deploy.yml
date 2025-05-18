@@ -43,7 +43,7 @@ jobs:
             check_db_exists "${DB_DATABASE_DEV}"
 
             echo "🔥 開始刪除資料庫 ${DB_DATABASE_DEV}..."
-            psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USERNAME} -d postgres -c 'drop database if exists "${DB_DATABASE_DEV}";'
+            psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USERNAME} -d postgres -c "DROP DATABASE IF EXISTS ${DB_DATABASE_DEV};"
             check_db_exists "${DB_DATABASE_DEV}"
 
             echo "🚀 Deploy complete"
