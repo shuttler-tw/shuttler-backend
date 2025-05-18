@@ -30,4 +30,10 @@ jobs:
             export PGPASSWORD=${DB_PASSWORD}
             echo "Show Current Database"
             psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USERNAME} -d ${DB_DATABASE_DEV} -c '\list'
+            for i in {1..7}; do
+              echo "$(tput setab $i)setab $i$(tput sgr0)\
+              $(tput setb $i)setb $i$(tput sgr0)\
+              $(tput setaf $i)setaf $i$(tput sgr0)\
+              $(tput setf $i)setf $i$(tput sgr0)"
+            done
             echo "Deploy complete"
