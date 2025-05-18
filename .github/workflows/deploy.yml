@@ -1,4 +1,4 @@
-name: Remote SSH Commanda
+name: Remote SSH Command
 on:
   push:
     branches:
@@ -38,10 +38,16 @@ jobs:
               fi
             }
           
+
             echo "🔍 開始檢查資料庫狀態..."
             check_db_exists "${DB_DATABASE_DEV}"
-            echo "🔥 開始刪除資料庫 ${DB_DATABASE_DEV}...
-            psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USERNAME} -d postgres -c "drop database if exists '${dbname}';"
+
+            echo "🔥 開始刪除資料庫 ${DB_DATABASE_DEV}..."
+            psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USERNAME} -d postgres -c "DROP DATABASE IF EXISTS ${DB_DATABASE_DEV};"
             check_db_exists "${DB_DATABASE_DEV}"
 
-            echo "Deploy complete"
+            echo "🗄️ 開始建立資料庫 ${DB_DATABASE_DEV}..."
+            psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USERNAME} -d postgres -c "CREATE DATABASE ${DB_DATABASE_DEV};"
+            check_db_exists "${DB_DATABASE_DEV}"
+
+            echo "🚀 Deploy complete"
