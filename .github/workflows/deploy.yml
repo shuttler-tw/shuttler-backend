@@ -27,6 +27,7 @@ jobs:
           script: |
             cd ~/work/github/shuttler-backend-dev
             git pull
+            git checkout feat/deploy
             export PGPASSWORD=${DB_PASSWORD}
             echo PGPASSWORD=${DB_PASSWORD} >> `date +%F`-log.txt
             echo DB_HOST=${DB_HOST} >> `date +%F`-log.txt
@@ -37,4 +38,5 @@ jobs:
             echo DB_DATABASE_DEV=${DB_DATABASE_DEV} >> `date +%F`-log.txt
             cat `date +%F`-log.txt
             rm -rf `date +%F`-log.txt
+            git switch develop
             echo "Deploy complete"
