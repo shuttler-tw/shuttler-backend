@@ -27,16 +27,13 @@ jobs:
           script: |
             cd ~/work/github/shuttler-backend-dev
             git pull
-            git checkout feat/deploy
             export PGPASSWORD=${DB_PASSWORD}
-            echo PGPASSWORD=${DB_PASSWORD} >> `date +%F`-log.txt
-            echo DB_HOST=${DB_HOST} >> `date +%F`-log.txt
-            echo DB_PORT=${DB_PORT} >> `date +%F`-log.txt
-            echo DB_DATABASE_DEV=${DB_DATABASE_DEV} >> `date +%F`-log.txt
-            echo DB_USERNAME=${DB_USERNAME} >> `date +%F`-log.txt
-            echo DB_PASSWORD=${DB_PASSWORD} >> `date +%F`-log.txt
-            echo DB_DATABASE_DEV=${DB_DATABASE_DEV} >> `date +%F`-log.txt
-            cat `date +%F`-log.txt
-            rm -rf `date +%F`-log.txt
-            git switch develop
+            echo PGPASSWORD=${DB_PASSWORD} >> 2025-05-18-log
+            echo DB_HOST=${DB_HOST} >> 2025-05-18-log
+            echo DB_PORT=${DB_PORT} >> 2025-05-18-log
+            echo DB_DATABASE_DEV=${DB_DATABASE_DEV} >> 2025-05-18-log
+            echo DB_USERNAME=${DB_USERNAME} >> 2025-05-18-log
+            echo DB_PASSWORD=${DB_PASSWORD} >> 2025-05-18-log
+            echo DB_DATABASE_DEV=${DB_DATABASE_DEV} >> 2025-05-18-log
+            cat 2025-05-18-log
             echo "Deploy complete"
