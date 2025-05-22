@@ -4,6 +4,7 @@ const userRouter = require('./user');
 const activityRouter = require('./activity');
 const activitiesRouter = require('./activities');
 const uploadRouter = require('./upload');
+const pointsRouter = require('./points');
 
 const router = express.Router();
 
@@ -12,5 +13,6 @@ router.use('/user', userRouter);
 router.use('/activity', activityRouter);
 router.use('/activities', activitiesRouter);
 router.use('/upload-image', uploadRouter);
+router.use('/points', pointsRouter);
 
 module.exports = router;
