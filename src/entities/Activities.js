@@ -85,7 +85,7 @@ module.exports = new EntitySchema({
     },
     status: {
       type: 'enum',
-      enum: ['draft', 'published', 'cancelled'],
+      enum: ['draft', 'published', 'suspended', 'ended'],
       default: 'draft',
       nullable: false,
     },

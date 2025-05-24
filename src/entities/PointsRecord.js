@@ -22,18 +22,18 @@ module.exports = new EntitySchema({
       type: 'int',
       nullable: false,
     },
-    status: {
-      type: 'varchar',
-      length: 50,
+    recordType: {
+      type: 'enum',
+      enum: ['addPoint', 'applyAct', 'cancelAct', 'suspendAct'],
       nullable: false,
     },
     created_at: {
-      type: 'timestamp',
+      type: 'timestamptz',
       nullable: false,
       createDate: true,
     },
     updated_at: {
-      type: 'timestamp',
+      type: 'timestamptz',
       nullable: false,
       updateDate: true,
     },
