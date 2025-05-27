@@ -564,6 +564,84 @@ const activityController = {
       await queryRunner.release();
     }
   },
+  async cancelActivity(req, res, next) {
+    const queryRunner = dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const { id } = req.user;
+      const { activityId } = req.params;
+
+      if (!isValidUUID(activityId)) {
+        return next(appError(400, '活動ID未填寫正確'));
+      }
+
+      const membersRepo = queryRunner.manager.getRepository('Members');
+      const activitiesRepo = queryRunner.manager.getRepository('Activities');
+      const activitiesRegisterRepo = queryRunner.manager.getRepository('ActivitiesRegister');
+      const pointsRecordRepo = queryRunner.manager.getRepository('PointsRecord');
+
+      const member = await membersRepo.findOne({
+        where: { id },
+      });
+      if (!member) {
+        return next(appError(404, '會員不存在'));
+      }
+
+      const activity = await activitiesRepo.findOne({
+        where: { id: activityId },
+      });
+      if (!activity) {
+        return next(appError(404, '活動不存在'));
+      }
+
+      if (new Date(activity.start_time) <= new Date()) {
+        return next(appError(400, '活動已結束，無法取消報名'));
+      }
+
+      const registration = await activitiesRegisterRepo.findOne({
+        where: {
+          member: { id: member.id },
+          activity: { id: activityId },
+        },
+      });
+      if (!registration) {
+        return next(appError(404, '你尚未報名此活動'));
+      }
+
+      if (registration.status === 'cancelled') {
+        return next(appError(409, '你已經取消報名此活動'));
+      }
+
+      registration.status = 'cancelled';
+      await activitiesRegisterRepo.save(registration);
+
+      member.points += activity.points * registration.participant_count;
+      await membersRepo.save(member);
+
+      activity.booked_count -= registration.participant_count;
+      await activitiesRepo.save(activity);
+
+      await pointsRecordRepo.save({
+        member: { id: member.id },
+        activity: { id: activity.id },
+        points_change: activity.points * registration.participant_count,
+        recordType: 'cancelAct',
+      });
+      await queryRunner.commitTransaction();
+      res.status(200).json({
+        message: '取消報名成功',
+        registrationId: registration.id,
+      });
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      logger.error('取消報名活動錯誤:', error);
+      next(error);
+    } finally {
+      await queryRunner.release();
+    }
+  },
 };
 
 module.exports = activityController;
