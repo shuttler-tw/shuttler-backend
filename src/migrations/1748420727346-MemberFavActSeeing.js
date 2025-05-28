@@ -6,9 +6,9 @@
  * @class
  * @implements {MigrationInterface}
  */
-module.exports = class MemberFavActSeeing1748315197324 {
+module.exports = class MemberFavActSeeing1748420727346 {
   constructor() {
-    this.name = 'MemberFavActSeeing1748315197324';
+    this.name = 'MemberFavActSeeing1748420727346';
   }
 
   async up(queryRunner) {

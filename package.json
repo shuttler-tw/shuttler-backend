@@ -42,7 +42,6 @@
     "pino-pretty": "^13.0.0",
     "pnpm": "^10.10.0",
     "typeorm": "^0.3.21",
-    "typeorm-seeding": "^1.6.1",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

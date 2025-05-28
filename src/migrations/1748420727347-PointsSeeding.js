@@ -6,9 +6,9 @@
  * @class
  * @implements {MigrationInterface}
  */
-module.exports = class PointsSeeding1748315472348 {
+module.exports = class PointsSeeding1748420727347 {
   constructor() {
-    this.name = 'PointsSeeding1748315472348';
+    this.name = 'PointsSeeding1748420727347';
   }
 
   async up(queryRunner) {

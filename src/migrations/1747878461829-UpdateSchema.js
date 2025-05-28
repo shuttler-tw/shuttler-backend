@@ -18,9 +18,6 @@ module.exports = class UpdateSchema1747878461829 {
     await queryRunner.query(`
       ALTER TABLE "ACTIVITIES" DROP COLUMN "is_published"
     `);
-    // await queryRunner.query(`
-    //   ALTER TABLE "ACTIVITIES" ADD "status" "public"."ACTIVITIES_status_enum" NOT NULL DEFAULT 'draft'
-    // `);
     await queryRunner.query(`
       ALTER TABLE "MEMBERS" DROP COLUMN "created_at"
     `);

@@ -401,9 +401,9 @@ const defaultFacilities = [
   { name: '停車場' },
 ];
 
-module.exports = class StableObjSeeding1748269727343 {
+module.exports = class StableObjSeeding1748420727343 {
   constructor() {
-    this.name = 'StableObjSeeding1748269727343';
+    this.name = 'StableObjSeeding1748420727343';
   }
 
   async up(queryRunner) {

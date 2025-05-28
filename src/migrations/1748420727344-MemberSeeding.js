@@ -8,9 +8,9 @@
  */
 const bcrypt = require('bcrypt');
 
-module.exports = class MemberSeeding1748270126681 {
+module.exports = class MemberSeeding1748420727344 {
   constructor() {
-    this.name = 'MemberSeeding1748270126681';
+    this.name = 'MemberSeeding1748420727344';
   }
 
   async up(queryRunner) {

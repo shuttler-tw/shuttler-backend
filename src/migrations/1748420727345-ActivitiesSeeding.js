@@ -9,6 +9,7 @@
 const defaultActivities = [
   {
     name: '歡樂團',
+    organizer: '小明羽球社',
     start_time: new Date('2025-03-22T09:00:00Z'),
     end_time: new Date('2025-03-22T12:00:00Z'),
     venue_name: '中壢三芝小鹿羽球館',
@@ -27,6 +28,7 @@ const defaultActivities = [
   },
   {
     name: '晨練羽球會',
+    organizer: '小美羽球社',
     start_time: new Date('2025-03-23T06:30:00Z'),
     end_time: new Date('2025-03-23T08:30:00Z'),
     venue_name: '桃園市立體育館',
@@ -45,6 +47,7 @@ const defaultActivities = [
   },
   {
     name: '週末大亂鬥',
+    organizer: '阿明羽球社',
     start_time: new Date('2025-03-29T14:00:00Z'),
     end_time: new Date('2025-03-29T17:00:00Z'),
     venue_name: '台北南港羽球館',
@@ -63,6 +66,7 @@ const defaultActivities = [
   },
   {
     name: '輕鬆下午打',
+    organizer: '小志同好會',
     start_time: new Date('2025-04-01T13:00:00Z'),
     end_time: new Date('2025-04-01T15:00:00Z'),
     venue_name: '林口體育館',
@@ -81,6 +85,7 @@ const defaultActivities = [
   },
   {
     name: '夜貓子羽球團',
+    organizer: '不睡覺俱樂部',
     start_time: new Date('2025-04-05T21:00:00Z'),
     end_time: new Date('2025-04-05T23:30:00Z'),
     venue_name: '台中大都會羽球中心',
@@ -99,6 +104,7 @@ const defaultActivities = [
   },
   {
     name: '新手教學團',
+    organizer: '羽球新手村',
     start_time: new Date('2025-04-10T10:00:00Z'),
     end_time: new Date('2025-04-10T12:00:00Z'),
     venue_name: '新竹縣立羽球館',
@@ -117,6 +123,7 @@ const defaultActivities = [
   },
   {
     name: '假日親子場',
+    organizer: '親子羽球樂園',
     start_time: new Date('2025-04-13T15:00:00Z'),
     end_time: new Date('2025-04-13T17:00:00Z'),
     venue_name: '永和羽球館',
@@ -135,6 +142,7 @@ const defaultActivities = [
   },
   {
     name: '學生特惠團',
+    organizer: '師大羽球社',
     start_time: new Date('2025-04-15T18:00:00Z'),
     end_time: new Date('2025-04-15T20:00:00Z'),
     venue_name: '師大體育館',
@@ -153,6 +161,7 @@ const defaultActivities = [
   },
   {
     name: '女子限定羽球團',
+    organizer: '女子羽球聯盟',
     start_time: new Date('2025-04-20T09:00:00Z'),
     end_time: new Date('2025-04-20T11:00:00Z'),
     venue_name: '士林運動中心',
@@ -171,6 +180,7 @@ const defaultActivities = [
   },
   {
     name: '中午快打團',
+    organizer: '午休羽球社',
     start_time: new Date('2025-04-22T12:00:00Z'),
     end_time: new Date('2025-04-22T13:30:00Z'),
     venue_name: '新店羽球會館',
@@ -189,9 +199,9 @@ const defaultActivities = [
   },
 ];
 
-module.exports = class ActivitiesSeeding1748311687217 {
+module.exports = class ActivitiesSeeding1748420727345 {
   constructor() {
-    this.name = 'ActivitiesSeeding1748311687217';
+    this.name = 'ActivitiesSeeding1748420727345';
   }
 
   async up(queryRunner) {
