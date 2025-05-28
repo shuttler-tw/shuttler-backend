@@ -13,20 +13,27 @@ module.exports = class MemberSeeding1748420727344 {
     this.name = 'MemberSeeding1748420727344';
   }
 
-  async up(queryRunner) {
+  async seedMembers(queryRunner) {
     const saltRounds = 10;
-
     const membersRepo = queryRunner.manager.getRepository('Members');
     const levelsRepo = queryRunner.manager.getRepository('Levels');
 
-    const level1 = await levelsRepo.findOneBy({ level: 1 });
-    const level2 = await levelsRepo.findOneBy({ level: 2 });
+    // 驗證依賴資料存在
+    const levels = await levelsRepo.find({ where: [{ level: 1 }, { level: 2 }] });
+
+    const level1 = levels.find((l) => l.level === 1);
+    const level2 = levels.find((l) => l.level === 2);
+
+    const [password1Hash, password2Hash] = await Promise.all([
+      bcrypt.hash('Aa12345678', saltRounds),
+      bcrypt.hash('Bb12345678', saltRounds),
+    ]);
 
     const defaultMembers = [
       {
         name: '使用者1',
         email: 'example1@example.com',
-        password: await bcrypt.hash('Aa12345678', saltRounds),
+        password: password1Hash,
         photo:
           'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=2960&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         level_id: level1.id,
@@ -35,7 +42,7 @@ module.exports = class MemberSeeding1748420727344 {
       {
         name: '使用者2',
         email: 'example2@example.com',
-        password: await bcrypt.hash('Bb12345678', saltRounds),
+        password: password2Hash,
         photo:
           'https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=2960&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         level_id: level2.id,
@@ -43,33 +50,26 @@ module.exports = class MemberSeeding1748420727344 {
       },
     ];
 
-    if (!level1 || !level2) {
-      throw new Error('✘ Level 資料尚未建立，請先執行 seed-levels.js');
-    }
+    await membersRepo.save(defaultMembers);
+    console.log(`✓ Insert ${defaultMembers.length} members`);
+  }
 
-    for (const member of defaultMembers) {
-      const exists = await membersRepo.findOneBy({ email: member.email });
-      if (!exists) {
-        await membersRepo.save(member);
-      }
+  async up(queryRunner) {
+    await queryRunner.startTransaction();
+
+    try {
+      await this.seedMembers(queryRunner);
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
     }
   }
 
   async down(queryRunner) {
-    const membersRepo = queryRunner.manager.getRepository('Members');
-    const defaultMembers = [
-      {
-        email: 'example1@example.com',
-      },
-      {
-        email: 'example2@example.com',
-      },
-    ];
-    for (const member of defaultMembers) {
-      const exists = await membersRepo.findOneBy({ email: member.email });
-      if (exists) {
-        await membersRepo.remove(exists);
-      }
-    }
+    const emails = ['example1@example.com', 'example2@example.com'];
+
+    // 批量刪除
+    await queryRunner.query('DELETE FROM MEMBERS WHERE email = ANY($1)', [emails]);
   }
 };

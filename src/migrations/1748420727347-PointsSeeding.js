@@ -6,39 +6,34 @@
  * @class
  * @implements {MigrationInterface}
  */
+
+const { DEFAULT_POINTS_PLAN } = require('../seeds/seeding-data');
 module.exports = class PointsSeeding1748420727347 {
   constructor() {
     this.name = 'PointsSeeding1748420727347';
   }
 
-  async up(queryRunner) {
-    const defaultPlan = [
-      {
-        points: 100,
-        value: 100,
-      },
-      {
-        points: 300,
-        value: 300,
-      },
-      {
-        points: 500,
-        value: 500,
-      },
-    ];
-
+  async seedPointsPlan(queryRunner) {
     const pointsPlanRepo = queryRunner.manager.getRepository('PointsPlan');
 
-    for (const plan of defaultPlan) {
-      const exists = await pointsPlanRepo.findOneBy({ points: plan.points, value: plan.value });
+    await pointsPlanRepo.save(DEFAULT_POINTS_PLAN);
+  }
 
-      if (!exists) {
-        await pointsPlanRepo.save(plan);
-      }
+  async up(queryRunner) {
+    await queryRunner.startTransaction();
+
+    try {
+      await this.seedPointsPlan(queryRunner);
+      await queryRunner.commitTransaction();
+      console.log('✓ PointsSeeding migration successfully');
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      console.error('✘ PointsSeeding migration failed:', error.message);
+      throw error;
     }
   }
 
   async down(queryRunner) {
-    await queryRunner.manager.createQueryBuilder().delete().from('PointsPlan').execute();
+    await queryRunner.query('DELETE FROM POINTS_PLAN');
   }
 };
