@@ -156,7 +156,24 @@ const activitiesController = {
       if (!isValidUUID(activityId)) {
         return next(appError(400, 'ID未填寫正確'));
       }
-      const activitiesRepo = await dataSource.getRepository('Activities');
+
+      const id = req.user ? req.user.id : null;
+      let isFavorite = false;
+      if (id) {
+        const memberFavoriteActivitiesRepo = dataSource.getRepository('MemberFavoriteActivities');
+        const favorite = await memberFavoriteActivitiesRepo.findOne({
+          where: {
+            member: { id },
+            activity: { id: activityId },
+          },
+        });
+
+        if (favorite) {
+          isFavorite = true;
+        }
+      }
+
+      const activitiesRepo = dataSource.getRepository('Activities');
       const activities = await activitiesRepo.findOne({
         where: {
           id: activityId,
@@ -229,6 +246,7 @@ const activitiesController = {
           contactPhone: activities.contact_phone,
           contactLine: activities.contact_line,
           points: activities.points,
+          isFavorite,
         },
       });
     } catch (error) {
