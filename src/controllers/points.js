@@ -27,23 +27,71 @@ const pointsController = {
     try {
       const { id } = req.user;
       const { pointsPlan } = req.body;
-      const userRepo = dataSource.getRepository('User');
-      const user = await userRepo.findOneBy({ id });
+
+      const membersRepo = dataSource.getRepository('Members');
+      const user = await membersRepo.findOneBy({ id });
+
       if (!user) {
         logger.warn('使用者不存在:', id);
         return next(appError(404, '使用者不存在'));
       }
 
-      const newebpayString = `MerchantID=${config.get()}&RespondType=JSON&TimeStamp=${Math.floor(Date.now() / 1000)}
-      &Version=1.5&LangType=zh-tw&MerchantOrderNo=${user.id}${Date.now()}&Amt=${pointsPlan.value}&
-      ItemDesc=購買點數&ReturnURL=${config.NEWEBPAY.ReturnURL}&NotifyURL=${config.NEWEBPAY.NotifyURL}&
-      CustomerURL=${config.NEWEBPAY.CustomerURL}&Email=${user.email}`;
+      const timeStamp = Math.floor(Date.now() / 1000);
+      const newebpayString = `MerchantID=${config.get('newebpay.MerchantID')}&RespondType=${config.get('newebpay.RespondType')}&TimeStamp=${timeStamp}&Version=${config.get('newebpay.Version')}&MerchantOrderNo=${timeStamp}&Amt=${pointsPlan.value}&ItemDesc=${encodeURI('points')}&Email=${encodeURIComponent(user.email)}&CREDIT=1`;
 
-      const hashKey = config.NEWEBPAY.HashKey;
-      const hashIV = config.NEWEBPAY.HashIV;
+      console.log('======================================');
+      console.log('newebpayString:', newebpayString);
+      console.log('======================================');
+
+      // 使用 AES 進行加密
+      const hashKey = config.get('newebpay.HashKey');
+      const hashIV = config.get('newebpay.HashIV');
+
+      const aes = crypto.createCipheriv('aes256', hashKey, hashIV);
+      const aesEnc = aes.update(newebpayString, 'utf8', 'hex') + aes.final('hex');
+      console.log('======================================');
+      console.log('aesEnc:', aesEnc);
+      console.log('======================================');
+
+      // 使用 SHA-256 進行雜湊
+      const sha = crypto.createHash('sha256');
+      const plainText = `HashKey=${hashKey}&${aesEnc}&HashIV=${hashIV}`;
+      const shaEnc = sha.update(plainText).digest('hex').toUpperCase();
+      console.log('======================================');
+      console.log('shaEnc:', shaEnc);
+      console.log('======================================');
+
+      // return to frontend
+      res.status(200).json({
+        status: 'success',
+        data: {
+          MerchantOrderNo: timeStamp,
+          Amt: pointsPlan.value,
+          TradeInfo: aesEnc,
+          TradeSha: shaEnc,
+          itemDesc: encodeURI('points'),
+          timeStamp,
+        },
+      });
     } catch (error) {
       logger.error('購買點數資料錯誤:', error);
       next(appError(500, '購買點數資料錯誤'));
+      // console.error('購買點數資料錯誤:', error);
+    }
+  },
+  newebpayReturn: async (req, res, next) => {
+    try {
+      // const { MerchantID, MerchantOrderNo, Amt } = req.query;
+      console.log('======================================');
+      console.log('newebpayReturn query:', req.data);
+      console.log('======================================');
+      // TODO: 驗證新支付返回的資料
+      // 存入資料庫
+
+      // const pointsOrderRepo = dataSource.getRepository('PointsOrder');
+    } catch (error) {
+      logger.error('新支付返回錯誤:', error);
+      next(appError(500, '新支付返回錯誤'));
     }
   },
 };
